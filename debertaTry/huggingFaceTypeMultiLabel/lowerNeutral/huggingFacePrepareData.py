@@ -1,3 +1,16 @@
+"""Prepare data, lower neutral class
+
+DATASET: google-research-datasets/go_emotions
+MODEL: https://huggingface.co/microsoft/deberta-v3-base
+
+
+deberta-v3-base
+google-research-datasets/go_emotions
+multilabel classification
+
+"""
+
+
 from datasets import load_dataset, Sequence
 import numpy as np
 import json

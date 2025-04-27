@@ -4,6 +4,9 @@ import json
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
+# pip install kagglehub
+import kagglehub                        
+from kagglehub import KaggleDatasetAdapter 
 from transformers import AutoTokenizer
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
@@ -18,8 +21,16 @@ from sklearn.metrics import accuracy_score, f1_score
 # from sklearn.metrics import confusion_matrix
 # import seaborn as sns
 
-def load_dataset(path):
-    df = pd.read_csv(path)
+def load_dataset_kaggle(dataset_handle: str, file_path: str) -> pd.DataFrame:
+    """
+    Pobiera plik z Kaggle i zwraca go jako DataFrame.
+    """
+    df = kagglehub.dataset_load(
+        KaggleDatasetAdapter.PANDAS,      # zwraca pandas DataFrame
+        dataset_handle,
+        file_path,
+        pandas_kwargs={"encoding": "utf-8"}  # ew. dodatkowe parametry
+    )
     print("Podgląd danych:")
     print(df.head())
     print("\nInformacje o kolumnach:")
@@ -134,7 +145,10 @@ def analyze_token_lengths(df):
 
 # ====== Główna sekcja ======
 if __name__ == "__main__":
-    df = load_dataset("emotion_sentimen_dataset.csv")
+    DATASET_HANDLE = "simaanjali/emotion-analysis-based-on-text"   # <-- repozytorium Kaggle
+    FILE_PATH      = "emotion_sentiment_dataset.csv"               #
+    
+    df = load_dataset_kaggle(DATASET_HANDLE, FILE_PATH)
 
     # plot_emotion_distribution(df)
     # plot_text_lengths(df)

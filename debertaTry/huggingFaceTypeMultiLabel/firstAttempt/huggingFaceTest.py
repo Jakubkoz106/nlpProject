@@ -1,3 +1,14 @@
+"""Test model
+
+DATASET: google-research-datasets/go_emotions
+MODEL: https://huggingface.co/microsoft/deberta-v3-base
+
+
+deberta-v3-base
+google-research-datasets/go_emotions
+multilabel classification
+
+"""
 import torch
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 import numpy as np

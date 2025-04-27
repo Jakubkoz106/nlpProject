@@ -1,3 +1,16 @@
+"""Train model, undersampling neutral class
+
+DATASET: google-research-datasets/go_emotions
+MODEL: https://huggingface.co/microsoft/deberta-v3-base
+
+
+deberta-v3-base
+google-research-datasets/go_emotions
+singlelabel classification
+
+
+"""
+
 from transformers import AutoModelForSequenceClassification, TrainingArguments, Trainer
 import numpy as np
 from sklearn.metrics import f1_score, accuracy_score, classification_report, confusion_matrix
