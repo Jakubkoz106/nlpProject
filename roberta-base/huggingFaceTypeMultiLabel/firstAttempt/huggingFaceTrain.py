@@ -47,9 +47,6 @@ def train_roberta_multi_label(train_dataset, val_dataset):
 
         return metrics
 
-
-
-
     trainer = Trainer(
         model=model,
         args=training_args,
@@ -86,12 +83,12 @@ def train_roberta_multi_label(train_dataset, val_dataset):
         for t in thresholds:
             preds = (probs > t).astype(int)
             f1 = f1_score(true_labels, preds, average="macro", zero_division=0)
-            print(f" - próg={t:.2f} → fi_macro={f1:.4f}")
+            print(f" - próg={t:.2f} → f1_macro={f1:.4f}")
             if f1 > best_f1:
                 best_f1 = f1
                 best_threshold = t
 
-        print(f"\n✅ Najlepszy próg: {best_threshold:.2f} z fi_macro={best_f1:.4f}")
+        print(f"\n✅ Najlepszy próg: {best_threshold:.2f} z f1_macro={best_f1:.4f}")
 
         final_preds = (probs > best_threshold).astype(int)
         report = classification_report(true_labels, final_preds, target_names=label_names, zero_division=0)
@@ -108,7 +105,6 @@ def train_roberta_multi_label(train_dataset, val_dataset):
                 f.write(f"\nConfusion Matrix - {label_names[i]}\n")
                 f.write(np.array2string(matrix))
                 f.write("\n")
-
 
         return best_threshold
 
