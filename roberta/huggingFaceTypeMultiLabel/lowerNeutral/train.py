@@ -19,12 +19,13 @@ def train_roberta_multi_label(train_dataset, val_dataset):
         save_strategy="epoch",
         per_device_train_batch_size=32,
         per_device_eval_batch_size=32,
-        num_train_epochs=3,
+        num_train_epochs=5,
         learning_rate=2e-5,
         logging_dir="./logs_goemotions",
         load_best_model_at_end=True,
         fp16=True,
-        metric_for_best_model="f1_micro",
+        metric_for_best_model="f1_macro",
+        greater_is_better=True,
         warmup_ratio=0.1,
         weight_decay=0.01
     )
@@ -84,13 +85,13 @@ def train_roberta_multi_label(train_dataset, val_dataset):
         print("\n🔎 Testowanie progów decyzyjnych:")
         for t in thresholds:
             preds = (probs > t).astype(int)
-            f1 = f1_score(true_labels, preds, average="micro", zero_division=0)
-            print(f" - próg={t:.2f} → f1_micro={f1:.4f}")
+            f1 = f1_score(true_labels, preds, average="macro", zero_division=0)
+            print(f" - próg={t:.2f} → f1_macro={f1:.4f}")
             if f1 > best_f1:
                 best_f1 = f1
                 best_threshold = t
 
-        print(f"\n✅ Najlepszy próg: {best_threshold:.2f} z f1_micro={best_f1:.4f}")
+        print(f"\n✅ Najlepszy próg: {best_threshold:.2f} z f1_macro={best_f1:.4f}")
 
         final_preds = (probs > best_threshold).astype(int)
         report = classification_report(true_labels, final_preds, target_names=label_names, zero_division=0)

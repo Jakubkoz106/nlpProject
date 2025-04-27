@@ -167,7 +167,7 @@ def analyze_token_lengths_hf(dataset):
 if __name__ == "__main__":
     dataset, label_names = load_goemotions_dataset()
 
-    # plot_label_frequencies(dataset, label_names)
+    plot_label_frequencies(dataset, label_names)
     # plot_message_lengths(dataset)
     # plot_top_multilabel_combinations(dataset, label_names, top_n=20)
     # print_sample_texts_with_emotion(dataset, label_names, "joy", n=5)
