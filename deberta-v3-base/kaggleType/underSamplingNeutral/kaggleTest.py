@@ -1,3 +1,16 @@
+
+"""Test model
+
+DATASET: simaanjali/emotion-analysis-based-on-text
+MODEL: https://huggingface.co/microsoft/deberta-v3-base
+
+
+deberta-v3-base
+simaanjali/emotion-analysis-based-on-text
+singlelabel classification
+
+"""
+
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 import torch
 import numpy as np

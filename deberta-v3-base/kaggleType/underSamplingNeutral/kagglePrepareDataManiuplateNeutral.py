@@ -1,3 +1,15 @@
+
+"""Prepare data, undersamplign neutral class
+
+DATASET: simaanjali/emotion-analysis-based-on-text
+MODEL: https://huggingface.co/microsoft/deberta-v3-base
+
+
+deberta-v3-base
+simaanjali/emotion-analysis-based-on-text
+singlelabel classification
+
+"""
 # from datasets import load_dataset
 import json
 

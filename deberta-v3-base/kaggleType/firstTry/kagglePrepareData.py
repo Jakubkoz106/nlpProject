@@ -1,3 +1,15 @@
+
+"""Prepare data
+
+DATASET: simaanjali/emotion-analysis-based-on-text
+MODEL: https://huggingface.co/microsoft/deberta-v3-base
+
+
+deberta-v3-base
+simaanjali/emotion-analysis-based-on-text
+singlelabel classification
+
+"""
 # from datasets import load_dataset
 import json
 
@@ -22,14 +34,12 @@ from sklearn.metrics import accuracy_score, f1_score
 # import seaborn as sns
 
 def load_dataset_kaggle(dataset_handle: str, file_path: str) -> pd.DataFrame:
-    """
-    Pobiera plik z Kaggle i zwraca go jako DataFrame.
-    """
+
     df = kagglehub.dataset_load(
-        KaggleDatasetAdapter.PANDAS,      # zwraca pandas DataFrame
+        KaggleDatasetAdapter.PANDAS,      
         dataset_handle,
         file_path,
-        pandas_kwargs={"encoding": "utf-8"}  # ew. dodatkowe parametry
+        pandas_kwargs={"encoding": "utf-8"}  
     )
     print("Podgląd danych:")
     print(df.head())
@@ -145,8 +155,9 @@ def analyze_token_lengths(df):
 
 # ====== Główna sekcja ======
 if __name__ == "__main__":
-    DATASET_HANDLE = "simaanjali/emotion-analysis-based-on-text"   # <-- repozytorium Kaggle
-    FILE_PATH      = "emotion_sentiment_dataset.csv"               #
+    kagglehub.login()
+    DATASET_HANDLE = "simaanjali/emotion-analysis-based-on-text"   
+    FILE_PATH      = "emotion_sentiment_dataset.csv"               
     
     df = load_dataset_kaggle(DATASET_HANDLE, FILE_PATH)
 

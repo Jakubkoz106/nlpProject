@@ -1,3 +1,16 @@
+
+"""Train model
+
+DATASET: simaanjali/emotion-analysis-based-on-text
+MODEL: https://huggingface.co/microsoft/deberta-v3-base
+
+
+deberta-v3-base
+simaanjali/emotion-analysis-based-on-text
+singlelabel classification
+
+"""
+
 import json
 from transformers import AutoModelForSequenceClassification, TrainingArguments, Trainer
 import numpy as np
@@ -6,7 +19,6 @@ from sklearn.metrics import accuracy_score, f1_score, classification_report, con
 from datasets import load_from_disk
 import matplotlib.pyplot as plt
 import seaborn as sns
-
 
 def train_roberta_single_label(train_dataset, val_dataset, num_labels):
 
@@ -17,7 +29,8 @@ def train_roberta_single_label(train_dataset, val_dataset, num_labels):
         output_dir="results_kaggle",
         eval_strategy="epoch",
         save_strategy="epoch",
-        per_device_train_batch_size=32,
+        gradient_accumulation_steps=8,
+        per_device_train_batch_size=8,
         per_device_eval_batch_size=64,
         num_train_epochs=2,
         learning_rate=2e-5,
