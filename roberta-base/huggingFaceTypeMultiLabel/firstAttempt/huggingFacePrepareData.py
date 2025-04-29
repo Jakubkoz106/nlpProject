@@ -92,7 +92,6 @@ def prepare_goemotions_for_model(dataset):
 
     tokenized = dataset.map(tokenize, batched=False)
 
-    # 💥 To dodaj koniecznie:
     tokenized = tokenized.cast_column("labels", Sequence(Value("float32")))
 
     tokenized.set_format(type="torch", columns=["input_ids", "attention_mask", "labels"])
