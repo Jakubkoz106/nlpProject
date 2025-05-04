@@ -1,4 +1,3 @@
-# from datasets import load_dataset
 import json
 
 import pandas as pd
@@ -9,14 +8,6 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 from datasets import Dataset
 
-from sklearn.utils import resample
-from transformers import AutoModelForSequenceClassification, TrainingArguments, Trainer
-import numpy as np
-from sklearn.metrics import accuracy_score, f1_score
-# import torch
-# from sklearn.metrics import classification_report
-# from sklearn.metrics import confusion_matrix
-# import seaborn as sns
 
 from sklearn.utils import resample
 
@@ -32,7 +23,6 @@ def load_dataset(path):
     neutral_df = df[df["Emotion"] == "neutral"]
     other_df = df[df["Emotion"] != "neutral"]
 
-    # Zmniejsz `neutral` do liczby przykładów reszty
     neutral_downsampled = resample(
         neutral_df,
         replace=False,
@@ -42,7 +32,7 @@ def load_dataset(path):
 
     df_balanced = pd.concat([neutral_downsampled, other_df])
 
-    print(f"\n📊 Liczba przykładów:")
+    print(f"\n Liczba przykładów:")
     print(f" - neutral: {len(neutral_df)}")
     print(f" - inne:    {len(other_df)}")
     print(f" - neutral (po downsamplingu): {len(neutral_downsampled)}")
@@ -83,10 +73,8 @@ def show_examples_for_emotion(df, emotion_label, n=5):
 
 
 def checkMultilabelData(df):
-    # Zlicz, ile etykiet znajduje się w każdej komórce
     df["label_count"] = df["Emotion"].apply(lambda x: len(str(x).split(",")))
 
-    # Sprawdź, ile przykładów ma więcej niż 1 etykietę
     multi_label_count = df[df["label_count"] > 1].shape[0]
     total = df.shape[0]
 
@@ -117,7 +105,7 @@ def prepare_data_for_model(df):
     train_dataset = train_dataset.select(range(190000))
     # val_dataset = val_dataset.select(range(2000))
 
-    print("\n✅ Dane z Kaggle przygotowane do modelu!")
+    print("\n Dane z Kaggle przygotowane do modelu!")
     print(f"- Liczba klas emocji: {len(label_encoder.classes_)}")
     print(f"- Nazwy klas: {list(label_encoder.classes_)}")
     print(f"- Rozmiar zbioru treningowego: {len(train_dataset)}")
@@ -133,10 +121,10 @@ def analyze_token_lengths(df):
 
     token_lengths = df[text_col].apply(lambda x: len(tokenizer.tokenize(str(x))))
 
-    print("\n📊 Statystyki długości tokenów:")
+    print("\n Statystyki długości tokenów:")
     print(token_lengths.describe())
 
-    print("\n📉 Procent wiadomości krótszych niż:")
+    print("\n Procent wiadomości krótszych niż:")
     for length in [32, 64, 128, 256, 512]:
         percent = (token_lengths < length).mean() * 100
         print(f" - {length} tokenów: {percent:.2f}%")
@@ -156,7 +144,7 @@ def analyze_token_lengths(df):
 
 
 
-# ====== Główna sekcja ======
+
 if __name__ == "__main__":
     df = load_dataset("emotion_sentimen_dataset.csv")
 
@@ -173,4 +161,4 @@ if __name__ == "__main__":
     with open("data/kaggle_labels.json", "w") as f:
         json.dump(list(class_names), f)
 
-    print("✅ Dane zapisane do katalogu 'data/'")
+    print(" Dane zapisane do katalogu 'data/'")

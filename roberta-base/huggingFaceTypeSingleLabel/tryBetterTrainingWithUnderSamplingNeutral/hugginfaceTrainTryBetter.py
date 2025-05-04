@@ -48,16 +48,16 @@ def train_roberta_single_label(train_dataset, val_dataset):
     )
 
     trainer.train()
-    print("✅ Trening single-label GoEmotions zakończony.")
+    print(" Trening single-label GoEmotions zakończony.")
 
 
 
-    print("\n📊 Generuję klasyfikację na zbiorze walidacyjnym...")
+    print("\n Generuję klasyfikację na zbiorze walidacyjnym...")
     preds_output = trainer.predict(val_dataset)
     preds = np.argmax(preds_output.predictions, axis=1)
     labels = preds_output.label_ids
 
-    print("\n📋 Classification Report:")
+    print("\n Classification Report:")
     print(classification_report(labels, preds, target_names=label_names))
 
     cm = confusion_matrix(labels, preds)
@@ -85,12 +85,12 @@ def train_roberta_single_label(train_dataset, val_dataset):
     plt.yticks(rotation=0)
     plt.tight_layout()
     plt.savefig("results_goemotions/confusion_matrix.png")
-    print("✅ Zapisano confusion matrix i classification report.")
+    print(" Zapisano confusion matrix i classification report.")
 
     metrics = compute_metrics((preds_output.predictions, preds_output.label_ids))
     with open("results_goemotions/metrics.json", "w", encoding="utf-8") as f:
         json.dump(metrics, f, indent=4)
-    print("✅ Zapisano metryki do metrics.json.")
+    print(" Zapisano metryki do metrics.json.")
 
 if __name__ == "__main__":
     tokenized_datasets = load_from_disk("data/goemotions_single_tokenized")
@@ -101,7 +101,7 @@ if __name__ == "__main__":
     with open("../defaultPrepareDataAndTraining/data/goemotions_labels.json", "r") as f:
         label_names = json.load(f)
 
-    print(f"✅ Wczytano dane: train={len(train_ds)}, val={len(val_ds)}")
+    print(f" Wczytano dane: train={len(train_ds)}, val={len(val_ds)}")
 
 
     train_roberta_single_label(train_ds, val_ds)

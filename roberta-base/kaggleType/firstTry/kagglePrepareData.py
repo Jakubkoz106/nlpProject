@@ -1,4 +1,3 @@
-# from datasets import load_dataset
 import json
 
 import pandas as pd
@@ -9,14 +8,6 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder
 from datasets import Dataset
 
-
-from transformers import AutoModelForSequenceClassification, TrainingArguments, Trainer
-import numpy as np
-from sklearn.metrics import accuracy_score, f1_score
-# import torch
-# from sklearn.metrics import classification_report
-# from sklearn.metrics import confusion_matrix
-# import seaborn as sns
 
 def load_dataset(path):
     df = pd.read_csv(path)
@@ -59,10 +50,8 @@ def show_examples_for_emotion(df, emotion_label, n=5):
 
 
 def checkMultilabelData(df):
-    # Zlicz, ile etykiet znajduje się w każdej komórce
     df["label_count"] = df["Emotion"].apply(lambda x: len(str(x).split(",")))
 
-    # Sprawdź, ile przykładów ma więcej niż 1 etykietę
     multi_label_count = df[df["label_count"] > 1].shape[0]
     total = df.shape[0]
 
@@ -92,7 +81,7 @@ def prepare_data_for_model(df):
 
     train_dataset = train_dataset.select(range(200000))
 
-    print("\n✅ Dane z Kaggle przygotowane do modelu!")
+    print("\n Dane z Kaggle przygotowane do modelu!")
     print(f"- Liczba klas emocji: {len(label_encoder.classes_)}")
     print(f"- Nazwy klas: {list(label_encoder.classes_)}")
     print(f"- Rozmiar zbioru treningowego: {len(train_dataset)}")
@@ -108,10 +97,10 @@ def analyze_token_lengths(df):
 
     token_lengths = df[text_col].apply(lambda x: len(tokenizer.tokenize(str(x))))
 
-    print("\n📊 Statystyki długości tokenów:")
+    print("\n Statystyki długości tokenów:")
     print(token_lengths.describe())
 
-    print("\n📉 Procent wiadomości krótszych niż:")
+    print("\n Procent wiadomości krótszych niż:")
     for length in [32, 64, 128, 256, 512]:
         percent = (token_lengths < length).mean() * 100
         print(f" - {length} tokenów: {percent:.2f}%")
@@ -131,7 +120,7 @@ def analyze_token_lengths(df):
 
 
 
-# ====== Główna sekcja ======
+
 if __name__ == "__main__":
     df = load_dataset("emotion_sentimen_dataset.csv")
 
@@ -148,4 +137,4 @@ if __name__ == "__main__":
     with open("data/kaggle_labels.json", "w") as f:
         json.dump(list(class_names), f)
 
-    print("✅ Dane zapisane do katalogu 'data/'")
+    print(" Dane zapisane do katalogu 'data/'")

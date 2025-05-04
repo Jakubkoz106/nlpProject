@@ -7,7 +7,7 @@
 #
 # inputs = tokenizer(["This is a test sentence."] * 256, return_tensors="pt", padding=True, truncation=True).to("cuda")
 #
-# print("✅ GPU:", torch.cuda.get_device_name(0))
+# print(" GPU:", torch.cuda.get_device_name(0))
 # print("⏳ Start inferencji...")
 #
 # start = time.time()
@@ -16,7 +16,7 @@
 #         _ = model(**inputs)
 # end = time.time()
 #
-# print(f"✅ Czas 100 iteracji: {end - start:.2f} sek")
+# print(f" Czas 100 iteracji: {end - start:.2f} sek")
 
 
 import torch

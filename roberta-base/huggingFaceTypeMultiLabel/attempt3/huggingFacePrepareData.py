@@ -97,7 +97,7 @@ def prepare_goemotions_for_model(dataset):
 
     tokenized.set_format(type="torch", columns=["input_ids", "attention_mask", "labels"])
 
-    print("\n✅ Dane GoEmotions przygotowane do modelu!")
+    print("\n Dane GoEmotions przygotowane do modelu!")
     print(f"- Rozmiar zbioru treningowego: {len(tokenized['train'])}")
     print(f"- Rozmiar zbioru walidacyjnego: {len(tokenized['validation'])}")
     print(f"- Przykład wejścia:\n{tokenized['train'][0]}")
@@ -112,13 +112,13 @@ def analyze_token_lengths_hf(dataset):
     token_lengths = [len(tokenizer.tokenize(text)) for text in dataset["train"]["text"]]
 
     # Statystyki
-    print("\n📊 Statystyki długości tokenów (GoEmotions):")
+    print("\n Statystyki długości tokenów (GoEmotions):")
 
     print(f"Średnia: {np.mean(token_lengths):.2f}")
     print(f"Mediana: {np.median(token_lengths):.0f}")
     print(f"Maksymalna długość: {np.max(token_lengths)}")
 
-    print("\n📉 Procent wiadomości krótszych niż:")
+    print("\n Procent wiadomości krótszych niż:")
     for length in [32, 64, 128, 256, 512]:
         percent = (np.array(token_lengths) < length).mean() * 100
         print(f" - {length} tokenów: {percent:.2f}%")
@@ -136,7 +136,7 @@ def analyze_token_lengths_hf(dataset):
     plt.show()
 
 
-# ====== GŁÓWNA SEKCJA URUCHOMIENIA ======
+
 if __name__ == "__main__":
     dataset, label_names = load_goemotions_dataset()
 
@@ -154,4 +154,4 @@ if __name__ == "__main__":
     with open("data/goemotions_labels.json", "w") as f:
         json.dump(label_names, f)
 
-    print("✅ Dane zostały zapisane do folderu 'data/'")
+    print(" Dane zostały zapisane do folderu 'data/'")

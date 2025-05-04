@@ -3,9 +3,9 @@ from transformers import AutoTokenizer, AutoModelForSequenceClassification
 import numpy as np
 import json
 
-# Ścieżki do modelu i etykiet
-MODEL_PATH = "results_goemotions/checkpoint-4071"  # ← wpisz swój checkpoint
-LABELS_PATH = "data/goemotions_labels.json"  # ← ścieżka do listy etykiet
+
+MODEL_PATH = "results_goemotions/checkpoint-4071"  
+LABELS_PATH = "data/goemotions_labels.json"  
 
 # Wczytaj etykiety
 with open(LABELS_PATH, "r") as f:
@@ -16,7 +16,7 @@ tokenizer = AutoTokenizer.from_pretrained("roberta-base")
 model = AutoModelForSequenceClassification.from_pretrained(MODEL_PATH)
 model.eval()
 
-# 🔮 Funkcja predykcji
+
 def predict_emotions(text, threshold=0.5):
     inputs = tokenizer(text, return_tensors="pt", truncation=True, padding=True, max_length=128)
     with torch.no_grad():
@@ -49,5 +49,5 @@ texts = [
 ]
 
 for text in texts:
-    print(f"📝 \"{text}\"")
-    print(f"\n🎯 Emocje: {predict_emotions(text)}\n")
+    print(f" \"{text}\"")
+    print(f"\n Emocje: {predict_emotions(text)}\n")

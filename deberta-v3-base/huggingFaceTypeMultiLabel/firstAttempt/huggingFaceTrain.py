@@ -171,7 +171,7 @@ def train_roberta_multi_label(train_dataset, val_dataset):
     )
 
     trainer.train()
-    print("✅ Trening modelu na GoEmotions zakończony.")
+    print(" Trening modelu na GoEmotions zakończony.")
     best_threshold = tune_threshold_and_plot(model, val_dataset)
 
 # ─────────────────────────── tune threshold + wykresy ─────────────────────────── #
@@ -197,7 +197,7 @@ def tune_threshold_and_plot(model, val_dataset,
     f1_scores = []
     best_f1, best_threshold = 0, 0.5
 
-    print("\n🔎 Testowanie progów decyzyjnych:")
+    print("\n Testowanie progów decyzyjnych:")
     for t in thresholds:
         preds = (probs > t).astype(int)
         f1 = f1_score(true_labels, preds, average="macro", zero_division=0)
@@ -206,7 +206,7 @@ def tune_threshold_and_plot(model, val_dataset,
         if f1 > best_f1:
             best_f1, best_threshold = f1, t
 
-    print(f"\n✅ Najlepszy próg: {best_threshold:.2f} z f1_macro={best_f1:.4f}")
+    print(f"\n Najlepszy próg: {best_threshold:.2f} z f1_macro={best_f1:.4f}")
 
     final_preds = (probs > best_threshold).astype(int)
     report = classification_report(true_labels, final_preds,
@@ -239,7 +239,7 @@ if __name__ == "__main__":
     with open("data/goemotions_labels.json", "r") as f:
         label_names = json.load(f)
 
-    print(f"✅ Wczytano dane: train={len(train_ds)}, val={len(val_ds)}")
+    print(f" Wczytano dane: train={len(train_ds)}, val={len(val_ds)}")
     ensure_dir("results_goemotions")
     ensure_dir("results_goemotions/plots")
 

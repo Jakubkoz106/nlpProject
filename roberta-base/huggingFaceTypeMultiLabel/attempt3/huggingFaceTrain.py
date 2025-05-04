@@ -76,7 +76,7 @@ def train_roberta_multi_label(train_dataset, val_dataset, label_names):
 
         with open("results_goemotions/metrics.json", "w", encoding="utf-8") as f:
             json.dump(metrics, f, indent=4)
-        print("✅ Zapisano metryki do metrics.json.")
+        print(" Zapisano metryki do metrics.json.")
 
         return metrics
 
@@ -94,7 +94,7 @@ def train_roberta_multi_label(train_dataset, val_dataset, label_names):
     )
 
     trainer.train()
-    print("✅ Trening modelu na GoEmotions zakończony.")
+    print(" Trening modelu na GoEmotions zakończony.")
 
     def tune_threshold(model, val_dataset, thresholds=np.arange(0.3, 0.61, 0.05)):
         all_logits = []
@@ -117,7 +117,7 @@ def train_roberta_multi_label(train_dataset, val_dataset, label_names):
         best_f1 = 0
         best_threshold = 0.5
 
-        print("\n🔎 Testowanie progów decyzyjnych:")
+        print("\n Testowanie progów decyzyjnych:")
         for t in thresholds:
             preds = (probs > t).astype(int)
             f1 = f1_score(true_labels, preds, average="micro", zero_division=0)
@@ -126,17 +126,74 @@ def train_roberta_multi_label(train_dataset, val_dataset, label_names):
                 best_f1 = f1
                 best_threshold = t
 
-        print(f"\n✅ Najlepszy próg: {best_threshold:.2f} z f1_micro={best_f1:.4f}")
+        print(f"\n Najlepszy próg: {best_threshold:.2f} z f1_micro={best_f1:.4f}")
 
         final_preds = (probs > best_threshold).astype(int)
         report = classification_report(true_labels, final_preds, target_names=label_names, zero_division=0)
-        print("\n📋 Classification report (dla najlepszego progu):")
+        print("\n Classification report (dla najlepszego progu):")
         print(report)
 
         with open("results_goemotions/classification_report.txt", "w", encoding="utf-8") as f:
             f.write(report)
 
-        print("\n📊 Macierze pomyłek zapisywane do pliku:")
+        print("\n Macierze pomyłek zapisywane do pliku:")
+        mcm = multilabel_confusion_matrix(true_labels, final_preds)
+        with open("results_goemotions/confusion_matrices.txt", "w", encoding="utf-8") as f:
+            for i, matrix in enumerate(mcm):
+                f.write(f"\nConfusion Matrix - {label_names[i]}\n")
+                f.write(np.array2string(matrix))
+                f.write("\n")
+
+        return best_threshold
+
+    best_threshold = tune_threshold(model, val_dataset)
+
+    def tune_threshold(model, val_dataset, thresholds=np.arange(0.3, 0.61, 0.05)):
+        all_logits = []
+        all_labels = []
+
+        device = next(model.parameters()).device
+
+        for i in range(0, len(val_dataset), 32):
+            batch = val_dataset[i:i+32]
+            inputs = {k: torch.tensor(batch[k]).to(device) for k in ["input_ids", "attention_mask"]}
+            with torch.no_grad():
+                logits = model(**inputs).logits.cpu()
+            all_logits.append(logits)
+            all_labels.append(torch.tensor(batch["labels"]))
+
+        logits = torch.cat(all_logits).numpy()
+        true_labels = torch.cat(all_labels).numpy()
+        probs = torch.sigmoid(torch.tensor(logits)).numpy()
+
+        best_f1 = 0
+        best_threshold = 0.5
+
+        with open("progi.txt", "w", encoding="utf-8") as f:
+            header = "\n Testowanie progów decyzyjnych:\n"
+            print(header, end="")
+            f.write(header)
+
+            for t in thresholds:
+                preds = (probs > t).astype(int)
+                f1 = f1_score(true_labels, preds, average="macro", zero_division=0)
+                line = f" - próg={t:.2f} → f1_macro={f1:.4f}\n"
+                print(line, end="")
+                f.write(line)
+
+            footer = f"\n Najlepszy próg: {best_threshold:.2f} z f1_macro={best_f1:.4f}\n"
+            print(footer, end="")
+            f.write(footer)
+
+        final_preds = (probs > best_threshold).astype(int)
+        report = classification_report(true_labels, final_preds, target_names=label_names, zero_division=0)
+        print("\n Classification report (dla najlepszego progu):")
+        print(report)
+
+        with open("results_goemotions/classification_report.txt", "w", encoding="utf-8") as f:
+            f.write(report)
+
+        print("\n Macierze pomyłek zapisywane do pliku:")
         mcm = multilabel_confusion_matrix(true_labels, final_preds)
         with open("results_goemotions/confusion_matrices.txt", "w", encoding="utf-8") as f:
             for i, matrix in enumerate(mcm):
@@ -149,6 +206,7 @@ def train_roberta_multi_label(train_dataset, val_dataset, label_names):
     best_threshold = tune_threshold(model, val_dataset)
 
 
+
 if __name__ == "__main__":
     tokenized_datasets = load_from_disk("data/goemotions_tokenized")
     train_ds = tokenized_datasets["train"]
@@ -158,6 +216,6 @@ if __name__ == "__main__":
     with open("data/goemotions_labels.json", "r") as f:
         label_names = json.load(f)
 
-    print(f"✅ Wczytano dane: train={len(train_ds)}, val={len(val_ds)}")
+    print(f" Wczytano dane: train={len(train_ds)}, val={len(val_ds)}")
 
     train_roberta_multi_label(train_ds, val_ds, label_names)

@@ -29,7 +29,7 @@ def train_roberta_single_label(train_dataset, val_dataset, num_labels):
         output_dir="results_kaggle",
         eval_strategy="epoch",
         save_strategy="epoch",
-        gradient_accumulation_steps=8,
+        gradient_accumulation_steps=16,
         per_device_train_batch_size=8,
         per_device_eval_batch_size=64,
         num_train_epochs=2,
@@ -37,6 +37,7 @@ def train_roberta_single_label(train_dataset, val_dataset, num_labels):
         logging_dir="./logs_kaggle",
         load_best_model_at_end=True,
         metric_for_best_model="accuracy",
+        greater_is_better=True,
         fp16=True,
         weight_decay=0.01,
         warmup_ratio=0.1
@@ -63,14 +64,14 @@ def train_roberta_single_label(train_dataset, val_dataset, num_labels):
     )
 
     trainer.train()
-    print("✅ Trening modelu na danych Kaggle zakończony.")
+    print(" Trening modelu na danych Kaggle zakończony.")
 
-    print("\n📊 Generuję klasyfikację na zbiorze walidacyjnym...")
+    print("\n Generuję klasyfikację na zbiorze walidacyjnym...")
     preds_output = trainer.predict(val_dataset)
     preds = np.argmax(preds_output.predictions, axis=1)
     labels = preds_output.label_ids
 
-    print("\n📋 Classification Report:")
+    print("\n Classification Report:")
     report = classification_report(labels, preds, target_names=class_names, zero_division=0)
     print(report)
 
@@ -87,14 +88,12 @@ def train_roberta_single_label(train_dataset, val_dataset, num_labels):
     plt.yticks(rotation=0)
     plt.tight_layout()
     plt.savefig("results_kaggle/confusion_matrix.png")
-    print("✅ Zapisano confusion matrix i classification report.")
+    print("Zapisano confusion matrix i classification report.")
 
-    # 🧾 Zapis metryk do JSON
     metrics = compute_metrics((preds_output.predictions, preds_output.label_ids))
     with open("results_kaggle/metrics.json", "w", encoding="utf-8") as f:
         json.dump(metrics, f, indent=4)
 
-# ====== Główna sekcja ======
 if __name__ == "__main__":
     train_dataset = load_from_disk("data/kaggle_train")
     val_dataset = load_from_disk("data/kaggle_val")

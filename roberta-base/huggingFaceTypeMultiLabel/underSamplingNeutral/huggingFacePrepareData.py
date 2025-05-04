@@ -1,15 +1,9 @@
 from datasets import load_dataset, Sequence
 import numpy as np
 import json
-# import seaborn as sns
 import matplotlib.pyplot as plt
 from transformers import AutoTokenizer
-# from sklearn.model_selection import train_test_split
-# from transformers import AutoModelForSequenceClassification, TrainingArguments, Trainer
-# import torch
-# from sklearn.metrics import classification_report
-# from sklearn.metrics import confusion_matrix
-# import seaborn as sns
+
 from collections import Counter
 import itertools
 from datasets import Value
@@ -21,28 +15,22 @@ def load_goemotions_dataset(undersample_neutral=True, neutral_cap=4000):
     label_names = dataset["train"].features["labels"].feature.names
 
     if undersample_neutral:
-        print("⚙️  Redukuję klasę 'neutral' do", neutral_cap)
+        print("Redukuję klasę 'neutral' do", neutral_cap)
 
-        # Przekształć do DataFrame
         df = dataset["train"].to_pandas()
 
-        # Znajdź indeks etykiety "neutral"
         neutral_index = label_names.index("neutral")
 
-        # Podziel na neutralne i resztę
         neutral_df = df[df["labels"].apply(lambda x: neutral_index in x)].sample(n=neutral_cap, random_state=42)
         rest_df = df[df["labels"].apply(lambda x: neutral_index not in x)]
 
-        # Połącz i przetasuj
         balanced_df = pd.concat([neutral_df, rest_df]).sample(frac=1.0, random_state=42).reset_index(drop=True)
 
-        # Konwersja z powrotem do Dataset
         new_train_dataset = Dataset.from_pandas(balanced_df)
 
-        # Zamień zbiór treningowy
         dataset["train"] = new_train_dataset
 
-    print(f"\n✅ Wczytano dane: train={len(dataset['train'])}, validation={len(dataset['validation'])}, test={len(dataset['test'])}")
+    print(f"\n Wczytano dane: train={len(dataset['train'])}, validation={len(dataset['validation'])}, test={len(dataset['test'])}")
     print(f"Unikalne emocje ({len(label_names)}): {label_names}")
     return dataset, label_names
 
@@ -117,12 +105,11 @@ def prepare_goemotions_for_model(dataset):
 
     tokenized = dataset.map(tokenize, batched=False)
 
-    # 💥 To dodaj koniecznie:
     tokenized = tokenized.cast_column("labels", Sequence(Value("float32")))
 
     tokenized.set_format(type="torch", columns=["input_ids", "attention_mask", "labels"])
 
-    print("\n✅ Dane GoEmotions przygotowane do modelu!")
+    print("\n Dane GoEmotions przygotowane do modelu!")
     print(f"- Rozmiar zbioru treningowego: {len(tokenized['train'])}")
     print(f"- Rozmiar zbioru walidacyjnego: {len(tokenized['validation'])}")
     print(f"- Przykład wejścia:\n{tokenized['train'][0]}")
@@ -134,17 +121,16 @@ def prepare_goemotions_for_model(dataset):
 def analyze_token_lengths_hf(dataset):
     tokenizer = AutoTokenizer.from_pretrained("roberta-base")
 
-    # Wyciągamy długości tokenów w zbiorze treningowym
     token_lengths = [len(tokenizer.tokenize(text)) for text in dataset["train"]["text"]]
 
     # Statystyki
-    print("\n📊 Statystyki długości tokenów (GoEmotions):")
+    print("\n Statystyki długości tokenów (GoEmotions):")
 
     print(f"Średnia: {np.mean(token_lengths):.2f}")
     print(f"Mediana: {np.median(token_lengths):.0f}")
     print(f"Maksymalna długość: {np.max(token_lengths)}")
 
-    print("\n📉 Procent wiadomości krótszych niż:")
+    print("\n Procent wiadomości krótszych niż:")
     for length in [32, 64, 128, 256, 512]:
         percent = (np.array(token_lengths) < length).mean() * 100
         print(f" - {length} tokenów: {percent:.2f}%")
@@ -163,7 +149,7 @@ def analyze_token_lengths_hf(dataset):
 
 
 
-# ====== GŁÓWNA SEKCJA URUCHOMIENIA ======
+
 if __name__ == "__main__":
     dataset, label_names = load_goemotions_dataset()
 
@@ -182,4 +168,4 @@ if __name__ == "__main__":
     with open("data/goemotions_labels.json", "w") as f:
         json.dump(label_names, f)
 
-    print("✅ Dane zostały zapisane do folderu 'data/'")
+    print(" Dane zostały zapisane do folderu 'data/'")

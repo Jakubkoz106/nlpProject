@@ -136,14 +136,16 @@ def train_roberta_multi_label(train_dataset, val_dataset, label_names):
         output_dir="results_goemotions",
         eval_strategy="epoch",
         save_strategy="epoch",
-        per_device_train_batch_size=32,
+        gradient_accumulation_steps=8,
+        per_device_train_batch_size=8,
         per_device_eval_batch_size=32,
-        num_train_epochs=3,
+        num_train_epochs=5,
         learning_rate=2e-5,
         logging_dir="./logs_goemotions",
         load_best_model_at_end=True,
         fp16=True,
-        metric_for_best_model="f1_micro",
+        metric_for_best_model="f1_macro",
+        greater_is_better=True,
         warmup_ratio=0.1,
         weight_decay=0.01
     )
@@ -174,7 +176,7 @@ def train_roberta_multi_label(train_dataset, val_dataset, label_names):
     )
 
     trainer.train()
-    print("✅ Zakończono trening.")
+    print(" Zakończono trening.")
 
     best_threshold, final_preds, probs = tune_threshold_and_plot(
         model, val_dataset, label_names
@@ -221,7 +223,7 @@ def tune_threshold_and_plot(model, val_dataset, label_names,
     ensure_dir("results_goemotions/plots")
     plot_threshold_curve(thresholds, f1_scores,
                          "results_goemotions/plots/f1_vs_threshold.png")
-    print(f"✅ Najlepszy próg: {best_threshold:.2f} (F1-macro={best_f1:.4f})")
+    print(f" Najlepszy próg: {best_threshold:.2f} (F1-macro={best_f1:.4f})")
 
     final_preds = (probs > best_threshold).astype(int)
 
@@ -270,7 +272,7 @@ if __name__ == "__main__":
     with open("data/goemotions_labels.json", "r") as f:
         label_names = json.load(f)
 
-    print(f"✅ Dane: train={len(train_ds)}, val={len(val_ds)}")
+    print(f" Dane: train={len(train_ds)}, val={len(val_ds)}")
     ensure_dir("results_goemotions")
     ensure_dir("results_goemotions/plots")
 
